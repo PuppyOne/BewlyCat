@@ -63,6 +63,10 @@ export function createTransformer(trigger: Ref<MaybeElement>, transformer: Trans
       if (el) {
         const targetRect = el.getBoundingClientRect()
 
+        // 元素通过 v-if 或 v-show 隐藏时，不计算新的位置
+        if (targetRect.width === 0 && targetRect.height === 0)
+          return
+
         if (transformer.centerTarget.x) {
           x = `calc(${transformer.x} - ${targetRect.width / 2}px)`
         }
