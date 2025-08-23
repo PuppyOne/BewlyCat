@@ -126,21 +126,5 @@ export function createTransformer(trigger: Ref<MaybeElement>, transformer: Trans
     }
   }, { flush: 'pre' })
 
-  // v-if - 使用getter函数来避免Vue警告
-  watch(() => target.value, (targetElement) => {
-    if (targetElement) {
-      try {
-        update()
-        const style = unrefElement(targetElement)?.getAttribute('style')
-        if (style !== undefined) {
-          unrefElement(targetElement)?.setAttribute('style', generateStyle(style))
-        }
-      }
-      catch (e) {
-        console.warn('Failed to update style on target change:', e)
-      }
-    }
-  }, { flush: 'pre' })
-
   return target
 }
