@@ -16,7 +16,7 @@ import {
 } from '~/components/TopBar/constants/urls'
 import { updateInterval } from '~/components/TopBar/notify'
 import type { PrivilegeInfo, UnReadDm, UnReadMessage, UserInfo } from '~/components/TopBar/types'
-import { useBewlyApp } from '~/composables/useAppProvider'
+import { type BewlyAppProvider, useBewlyApp } from '~/composables/useAppProvider'
 import { AppPage } from '~/enums/appEnums'
 import { settings } from '~/logic'
 import type { List as VideoItem } from '~/models/video/watchLater'
@@ -93,14 +93,20 @@ export const useTopBarStore = defineStore('topBar', () => {
 
   // 从 useTopBarReactive 整合的状态
   // 延迟获取 AppProvider，避免在 store 初始化时就调用
-  const getAppProvider = () => {
-    try {
-      return useBewlyApp()
+  const getAppProvider = (() => {
+    let bewlyAppProvider: BewlyAppProvider | undefined
+
+    return () => {
+      try {
+        if (!bewlyAppProvider)
+          bewlyAppProvider = useBewlyApp()
+        return bewlyAppProvider
+      }
+      catch {
+        return null
+      }
     }
-    catch {
-      return null
-    }
-  }
+  })()
 
   // 从 useTopBarReactive 整合的计算属性
   const isSearchPage = computed((): boolean => {
